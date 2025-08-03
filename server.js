@@ -1,39 +1,29 @@
 const express = require('express');
+const app = express();
 const cors = require('cors');
 
-const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static('public'));
-
-const PORT = 3000;
-
-const jumpRequests = {}; // { "username|password": true }
+let jumpRequests = {}; // { username: password }
 
 app.post('/jump', (req, res) => {
   const { username, password } = req.body;
-  if (!username || !password) return res.status(400).send("username o password mancanti");
-
-  const key = username + "|" + password;
-  jumpRequests[key] = true;
-  console.log(`Salto richiesto da ${username}`);
-  res.sendStatus(200);
+  if (!username || !password) return res.status(400).send('Missing username or password');
+  jumpRequests[username] = password;
+  res.send({ ok: true });
 });
 
 app.get('/jump/:username/:password', (req, res) => {
-  const username = req.params.username;
-  const password = req.params.password;
-  const key = username + "|" + password;
-
-  if (jumpRequests[key]) {
-    jumpRequests[key] = false;
-    res.json({ jump: true });
-  } else {
-    res.json({ jump: false });
+  const { username, password } = req.params;
+  if (jumpRequests[username] && jumpRequests[username] === password) {
+    delete jumpRequests[username];
+    return res.json({ jump: true });
   }
+  res.json({ jump: false });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server avviato su http://0.0.0.0:${PORT}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server attivo su porta ${PORT}`);
 });
