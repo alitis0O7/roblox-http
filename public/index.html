@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Comando Salto Roblox</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Fai saltare il tuo personaggio Roblox</h1>
@@ -12,28 +13,43 @@
   <label>Password:</label><br />
   <input type="password" id="password" placeholder="Password" /><br /><br />
 
-  <button onclick="inviaSalto()">Salta!</button>
+  <button id="saltaBtn" onclick="inviaSalto()">Salta!</button>
 
   <script>
     function inviaSalto() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
+      const button = document.getElementById("saltaBtn"); // ✅ ora è definito
 
       if (!username || !password) {
+        button.classList.remove("success");
+        button.classList.add("error");
         alert("Inserisci username e password");
         return;
       }
 
-      fetch("http://151.45.45.50:3000/jump", {
+      fetch("https://roblox-http.onrender.com/jump", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
       })
       .then(res => {
-        if (res.ok) alert("Comando salto inviato!");
-        else alert("Errore nell'invio del comando salto.");
+        if (res.ok){
+          button.classList.remove("error");
+          button.classList.add("success");
+          alert("Comando salto inviato!");
+        } 
+        else{
+          button.classList.remove("success");
+          button.classList.add("error");
+          alert("Errore nell'invio del comando salto.");
+        } 
       })
-      .catch(e => alert("Errore di rete: " + e));
+      .catch(e => {
+        button.classList.remove("success");
+        button.classList.add("error");
+        alert("Errore di rete: " + e);
+      });
     }
   </script>
 </body>
