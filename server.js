@@ -1,11 +1,16 @@
 const express = require('express');
-const app = express();
 const cors = require('cors');
+const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
 let jumpRequests = {}; // { username: password }
+
+app.get('/', (req, res) => {
+  res.send('Server Roblox attivo!');
+});
 
 app.post('/jump', (req, res) => {
   const { username, password } = req.body;
@@ -23,7 +28,6 @@ app.get('/jump/:username/:password', (req, res) => {
   res.json({ jump: false });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server attivo su porta ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server attivo su porta ${port}`);
 });
